@@ -203,10 +203,10 @@ typedef TValue *StkId;  /* index to stack elements */
 typedef union TString {
   L_Umaxalign dummy;  /* ensures maximum alignment for strings */
   struct {
-    CommonHeader;
-    lu_byte reserved;
-    unsigned int hash;
-    size_t len;
+    CommonHeader;             // can gc
+    lu_byte reserved;         // 标记是否是保留字
+    unsigned int hash;        // 字符串的hash
+    size_t len;               // 字符串长度，降低取长度的时间复杂度 O(1)
   } tsv;
 } TString;
 
