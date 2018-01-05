@@ -396,6 +396,7 @@ static Node *getfreepos (Table *t) {
 ** position or not: if it is not, move colliding node to an empty place and 
 ** put new key in its main position; otherwise (colliding node is in its main 
 ** position), new key goes to an empty position. 
+** 喵喵喵！！！！！！！
 */
 static TValue *newkey (lua_State *L, Table *t, const TValue *key) {
   Node *mp = mainposition(t, key);
@@ -423,6 +424,7 @@ static TValue *newkey (lua_State *L, Table *t, const TValue *key) {
       mp = n;
     }
   }
+  // 没有在mp上找到，那么直接放到对应的mp里
   gkey(mp)->value = key->value; gkey(mp)->tt = key->tt;
   luaC_barriert(L, t, key);
   lua_assert(ttisnil(gval(mp)));

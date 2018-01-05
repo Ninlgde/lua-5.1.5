@@ -332,23 +332,24 @@ typedef union TKey {
   TValue tvk;
 } TKey;
 
-
+// 表内散列桶
 typedef struct Node {
   TValue i_val;
   TKey i_key;
 } Node;
 
-
+// 既然结构上完全是把map和list分开的
+// 那么为啥当时不定义两个数据结构呢？？？？？
 typedef struct Table {
-  CommonHeader;
+  CommonHeader;   // can gc
   lu_byte flags;  /* 1<<p means tagmethod(p) is not present */ 
-  lu_byte lsizenode;  /* log2 of size of `node' array */
-  struct Table *metatable;
-  TValue *array;  /* array part */
-  Node *node;
+  lu_byte lsizenode;  /* log2 of size of `node' array 散列表的大小*/
+  struct Table *metatable;   // 该表的元表
+  TValue *array;  /* array part 数组部分的指针*/
+  Node *node;     /* 指向该表的散列桶数组的起始指针 */
   Node *lastfree;  /* any free position is before this position */
-  GCObject *gclist;
-  int sizearray;  /* size of `array' array */
+  GCObject *gclist; // gc链表
+  int sizearray;  /* size of `array' array 数组大小 理论上是#取出来的内容吧？*/
 } Table;
 
 

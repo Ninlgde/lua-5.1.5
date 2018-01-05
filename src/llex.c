@@ -64,6 +64,8 @@ static void save (LexState *ls, int c) {
 
 void luaX_init (lua_State *L) {
   int i;
+  // 词法分析初始化的时候需要把所有的保留字加到stringtable里
+  // 并且reserved要标记为非0
   for (i=0; i<NUM_RESERVED; i++) {
     TString *ts = luaS_new(L, luaX_tokens[i]);
     luaS_fix(ts);  /* reserved words are never collected */

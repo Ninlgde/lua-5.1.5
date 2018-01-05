@@ -19,7 +19,10 @@
 #include "lstring.h"
 
 
-
+// 思考：如果size不断变大，这种扩容方式是否会引起性能瓶颈？
+// redis 是惰性的，一次转移一部分的方式
+// 但是，redis的方式会使空间变大为扩容前的3倍
+// 所以如何权衡？
 void luaS_resize (lua_State *L, int newsize) {
   GCObject **newhash;
   stringtable *tb;
@@ -67,6 +70,7 @@ static TString *newlstr (lua_State *L, const char *str, size_t l,
   ts->tsv.next = tb->hash[h];  /* chain new entry */
   tb->hash[h] = obj2gco(ts);
   tb->nuse++;
+  // 如果字符串的数量比桶大就扩容，有个上限MAX_INT的一半
   if (tb->nuse > cast(lu_int32, tb->size) && tb->size <= MAX_INT/2)
     luaS_resize(L, tb->size*2);  /* too crowded */
   return ts;
@@ -78,6 +82,7 @@ TString *luaS_newlstr (lua_State *L, const char *str, size_t l) {
   unsigned int h = cast(unsigned int, l);  /* seed */
   size_t step = (l>>5)+1;  /* if string is too long, don't hash all its chars */
   size_t l1;
+  // 这个hash是啥算法？回头查查
   for (l1=l; l1>=step; l1-=step)  /* compute hash */
     h = h ^ ((h<<5)+(h>>2)+cast(unsigned char, str[l1-1]));
   for (o = G(L)->strt.hash[lmod(h, G(L)->strt.size)];
@@ -90,6 +95,7 @@ TString *luaS_newlstr (lua_State *L, const char *str, size_t l) {
       return ts;
     }
   }
+  // 如果之前没有这个字符串，那么需要新加一个到stringtable里
   return newlstr(L, str, l, h);  /* not found */
 }
 
