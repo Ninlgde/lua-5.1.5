@@ -34,7 +34,7 @@ struct lua_longjmp;  /* defined in ldo.c */
 #define BASIC_STACK_SIZE        (2*LUA_MINSTACK)
 
 
-
+// 字符串的全局table，每个相同的字符串只有一份
 typedef struct stringtable {
   GCObject **hash;
   lu_int32 nuse;  /* number of elements */
